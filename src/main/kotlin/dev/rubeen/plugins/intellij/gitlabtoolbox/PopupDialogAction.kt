@@ -3,24 +3,18 @@ package dev.rubeen.plugins.intellij.gitlabtoolbox
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.ui.Messages
+import dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsState
 import dev.rubeen.plugins.intellij.gitlabtoolbox.exceptions.GitlabException
+import dev.rubeen.plugins.intellij.gitlabtoolbox.services.CredentialService
 import dev.rubeen.plugins.intellij.gitlabtoolbox.services.GitlabService
 
 class PopupDialogAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project
         project?.getService(GitlabService::class.java)?.let { service ->
-            val domain = Messages.showInputDialog(
-                project,
-                "Enter domain",
-                "Domain",
-                Messages.getInformationIcon(),
-                "https://gitlab.com",
-                null
-            )
             try {
-                service.getApi(domain!!).projectApi.projects.let { projects ->
-                    Messages.showMessageDialog(project, projects?.joinToString("\n") {
+                service.projects().let { projects ->
+                    Messages.showMessageDialog(project, projects.joinToString("\n") {
                         println(it)
                         it.name
                     }, "Information", Messages.getInformationIcon())
@@ -33,7 +27,7 @@ class PopupDialogAction : AnAction() {
                     Messages.getInformationIcon(),
                     null
                 ).let { token ->
-                    service.saveAccessToken(domain!!, token!!)
+                    CredentialService.instance.saveGitlabAccessToken(AppSettingsState.instance.selectedDomain!!, token!!)
                 }
             }
         }

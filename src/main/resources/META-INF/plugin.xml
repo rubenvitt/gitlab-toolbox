@@ -27,13 +27,14 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <projectConfigurable
+        <applicationConfigurable
                 parentId="vcs"
-                instance="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.ProjectSettingsConfigurable"
-                id="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.ProjectSettingsConfigurable"
-                displayName="Gitlab Toolbox Settings"
-                nonDefaultProject="true"/>
-        <applicationService serviceImplementation="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.AppSettingsState"/>
+                instance="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsConfigurable"
+                id="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsConfigurable"
+                displayName="Gitlab Toolbox Settings"/>
+
+        <applicationService
+                serviceImplementation="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsState"/>
     </extensions>
     <actions>
         <group id="GitlabToolboxGroup" text="Gitlab Toolbox" description="Tools for Gitlab" popup="true"

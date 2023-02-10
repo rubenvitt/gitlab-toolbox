@@ -1,11 +1,11 @@
-package dev.rubeen.plugins.intellij.gitlabtoolbox.configuration
+package dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings
 
 import com.intellij.openapi.options.Configurable
 import javax.swing.JComponent
 
 class ProjectSettingsConfigurable : Configurable {
     override fun createComponent(): JComponent? {
-        // settings panel
+        TODO("Not yet implemented")
     }
 
     override fun isModified(): Boolean {
