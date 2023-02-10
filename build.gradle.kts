@@ -17,7 +17,11 @@ intellij {
     version.set("231-EAP-SNAPSHOT")
     type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf("org.jetbrains.git"))
+    plugins.set(listOf("Git4Idea"))
+}
+
+dependencies {
+    implementation("org.gitlab4j:gitlab4j-api:4.19.0")
 }
 
 tasks {

@@ -22,11 +22,36 @@
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.vcs</depends>
+    <depends>Git4Idea</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-
+        <projectConfigurable
+                parentId="vcs"
+                instance="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.ProjectSettingsConfigurable"
+                id="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.ProjectSettingsConfigurable"
+                displayName="Gitlab Toolbox Settings"
+                nonDefaultProject="true"/>
+        <applicationService serviceImplementation="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.AppSettingsState"/>
     </extensions>
+    <actions>
+        <group id="GitlabToolboxGroup" text="Gitlab Toolbox" description="Tools for Gitlab" popup="true"
+               icon="AllIcons.Vcs.Vendors.Github">
+            <add-to-group group-id="Git.MainMenu" anchor="last"/>
+        </group>
+
+        <action id="dev.rubeen.plugins.intellij.gitlabtoolbox.PopupDialogAction"
+                class="dev.rubeen.plugins.intellij.gitlabtoolbox.PopupDialogAction" text="Pop Dialog Action"
+                icon="AllIcons.Actions.AddToDictionary"
+                description="SDK action example">
+            <add-to-group group-id="GitlabToolboxGroup" anchor="last"/>
+            <override-text place="MainMenu" text="Pop Dialog Action Test"/>
+            <keyboard-shortcut first-keystroke="control alt A" keymap="$default" second-keystroke="C"/>
+            <mouse-shortcut keymap="$default" keystroke="control button3 double-click"/>
+        </action>
+    </actions>
+
+    <applicationListeners>
+    </applicationListeners>
 </idea-plugin>

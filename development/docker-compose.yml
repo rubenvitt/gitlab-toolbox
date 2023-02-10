@@ -1,0 +1,26 @@
+version: '3.8'
+
+name: gitlab-toolbox-development
+
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    restart: unless-stopped
+    volumes:
+      - 'gitlab-data:/var/opt/gitlab'
+      - 'gitlab-logs:/var/log/gitlab'
+      - 'gitlab-config:/etc/gitlab'
+    ports:
+      - '10001:80'
+      - '10002:443'
+      - '10003:22'
+    shm_size: '256m'
+
+
+volumes:
+  gitlab-data:
+    driver: local
+  gitlab-logs:
+    driver: local
+  gitlab-config:
+    driver: local
