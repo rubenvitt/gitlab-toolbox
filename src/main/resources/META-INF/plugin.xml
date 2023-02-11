@@ -28,13 +28,24 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable
-                parentId="vcs"
+                parentId="project.propVCSSupport.Mappings"
                 instance="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsConfigurable"
                 id="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsConfigurable"
                 displayName="Gitlab Toolbox Settings"/>
 
+        <projectConfigurable
+                parentId="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsConfigurable"
+                instance="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings.ProjectSettingsConfigurable"
+                id="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings.ProjectSettingsConfigurable"
+                nonDefaultProject="true"
+                displayName="Gitlab Toolbox Settings (Project)"/>
+
+        <toolWindow factoryClass="dev.rubeen.plugins.intellij.gitlabtoolbox.toolwindows.main.MainToolWindowFactory"
+                    id="GitlabToolboxToolWindow" anchor="bottom" canCloseContents="true"/>
+
         <applicationService
                 serviceImplementation="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsState"/>
+
     </extensions>
     <actions>
         <group id="GitlabToolboxGroup" text="Gitlab Toolbox" description="Tools for Gitlab" popup="true"

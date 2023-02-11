@@ -14,21 +14,17 @@ class AppSettingsConfigurable : Configurable {
 
     override fun isModified(): Boolean {
         val settings = AppSettingsState.instance
-        return settings.domains != settingsComponent!!.domains.withoutEmpty() || settings.selectedDomain != selectedDomainOrNull(
-            settingsComponent!!.selectedDomain
-        )
+        return settings.gitlabDomains != settingsComponent!!.gitlabDomains.withoutEmpty()
     }
 
     override fun apply() {
         val settings = AppSettingsState.instance
 
-        settings.domains = settingsComponent!!.domains.withoutEmpty()
-        settings.selectedDomain = selectedDomainOrNull(settingsComponent!!.selectedDomain)
+        settings.gitlabDomains = settingsComponent!!.gitlabDomains.withoutEmpty()
     }
 
     override fun reset() {
-        settingsComponent!!.domains = AppSettingsState.instance.domains ?: listOf()
-        settingsComponent!!.selectedDomain = AppSettingsState.instance.selectedDomain ?: EMPTY_VALUE
+        settingsComponent!!.gitlabDomains = AppSettingsState.instance.gitlabDomains ?: listOf()
     }
 
     override fun disposeUIResources() {
@@ -36,9 +32,6 @@ class AppSettingsConfigurable : Configurable {
     }
 
     override fun getDisplayName(): String = "GitLab Toolbox"
-
-    private fun selectedDomainOrNull(selectedDomain: String?) =
-        if (settingsComponent!!.selectedDomain == EMPTY_VALUE) null else settingsComponent!!.selectedDomain
 }
 
 private fun <E> List<E>.withoutEmpty(): List<E> {

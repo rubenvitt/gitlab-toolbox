@@ -8,8 +8,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 
 @State(name = "dev.rubeen.plugins.intellij.gitlabtoolbox.AppSettingsState", storages = [Storage("gitlab-toolbox.xml")])
 class AppSettingsState : PersistentStateComponent<AppSettingsState> {
-    var domains: List<String>? = null
-    var selectedDomain: String? = null
+    var gitlabDomains: List<String>? = null
 
     companion object {
         val instance: AppSettingsState

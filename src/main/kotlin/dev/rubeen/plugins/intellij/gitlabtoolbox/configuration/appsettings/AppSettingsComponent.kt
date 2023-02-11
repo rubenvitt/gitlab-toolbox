@@ -1,7 +1,7 @@
 package dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings
 
-import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.Messages
+import com.intellij.ui.components.JBList
 import com.intellij.util.ui.FormBuilder
 import dev.rubeen.plugins.intellij.gitlabtoolbox.services.CredentialService
 import java.awt.FlowLayout
@@ -11,7 +11,7 @@ import javax.swing.JPanel
 
 class AppSettingsComponent {
     private val mainPanel: JPanel
-    private val jbList = ComboBox<String>()
+    private val jbList = JBList<String>()
     private val jbAddButton = JButton("Add domain")
     private val jRemoveButton = JButton("Remove domain")
     private val jbRemoveCredentialsButton = JButton("Remove credentials for domain")
@@ -22,22 +22,11 @@ class AppSettingsComponent {
     val preferredFocusedComponent: JComponent
         get() = jbList
 
-    var selectedDomain: String?
-        get() = jbList.selectedItem as String? ?: "- Select domain -"
+    var gitlabDomains: List<String> = listOf()
         set(value) {
-            jbList.selectedItem = value
-        }
-
-    fun addDomain(domain: String) {
-        jbList.addItem(domain)
-    }
-
-    var domains: List<String>
-        get() = (0 until jbList.itemCount).map { jbList.getItemAt(it) }
-        set(value) {
-            jbList.removeAllItems()
-            jbList.addItem("- Select domain -")
-            value.forEach { jbList.addItem(it) }
+            field = value
+            jbList.removeAll()
+            jbList.setListData(value.toTypedArray())
         }
 
     init {
@@ -46,17 +35,17 @@ class AppSettingsComponent {
                 "Enter domain",
                 "Add Domain",
                 Messages.getQuestionIcon()
-            )?.let { domain -> addDomain(domain) }
+            )?.let { domain -> addGitlabDomain(domain) }
         }
 
         jRemoveButton.addActionListener {
             if (jbList.selectedIndex == 0) return@addActionListener
-            jbList.removeItemAt(jbList.selectedIndex)
-            CredentialService.instance.removeGitlabAccessToken(jbList.selectedItem as String)
+            jbList.remove(jbList.selectedIndex)
+            CredentialService.instance.removeGitlabAccessToken(jbList.selectedValue)
         }
 
         jbRemoveCredentialsButton.addActionListener {
-            CredentialService.instance.removeGitlabAccessToken(jbList.selectedItem as String)
+            CredentialService.instance.removeGitlabAccessToken(jbList.selectedValue)
         }
 
         val firstLine = JPanel().apply {
@@ -75,5 +64,11 @@ class AppSettingsComponent {
             .addComponentFillVertically(JPanel(), 0)
             .addComponent(jbAddButton)
             .panel
+    }
+
+    private fun addGitlabDomain(domain: String) {
+        if (domain.isBlank()) return
+        if (gitlabDomains.contains(domain)) return
+        gitlabDomains = gitlabDomains + domain
     }
 }
