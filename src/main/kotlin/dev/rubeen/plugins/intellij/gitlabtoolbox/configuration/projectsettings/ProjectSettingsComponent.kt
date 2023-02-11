@@ -1,5 +1,6 @@
 package dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings
 
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.util.ui.FormBuilder
@@ -11,6 +12,10 @@ class ProjectSettingsComponent(project: Project) {
     private val mainPanel: JPanel
     private val domainsList = ComboBox<String>()
     private val projectsList = ComboBox<String>()
+
+    companion object {
+        private val logger = logger<ProjectSettingsComponent>()
+    }
 
     val panel: JPanel
         get() = mainPanel
@@ -31,27 +36,35 @@ class ProjectSettingsComponent(project: Project) {
         domainsList.addItem("")
         AppSettingsState.instance.gitlabDomains?.forEach { domainsList.addItem(it) }
 
-        domainsList.addActionListener { event ->
-            println("event: $event")
-            val selectedDomain = domainsList.selectedItem
-            println("Selected domain: $selectedDomain")
-            val service = GitlabService.getService(project)
-            println("Service: $service")
-            val projects = try {
-                service.projects(selectedDomain as String)
-            } catch (e: Exception) {
-                GitlabService.getService(project).askUserForAccessToken(selectedDomain as String)
-                service.projects(selectedDomain)
-            }
-            println("Projects: $projects")
-            projectsList.removeAll()
-            projectsList.addItem("")
-            projects.forEach { projectsList.addItem(it.name) }
+        domainsList.addActionListener {
+            // run async
+            Thread { updateProjectsList(project) }.start()
         }
 
         mainPanel = FormBuilder.createFormBuilder()
             .addLabeledComponent("Gitlab domain:", domainsList)
             .addLabeledComponent("Gitlab project:", projectsList)
             .panel
+    }
+
+    private fun updateProjectsList(project: Project) {
+        val selectedDomain = domainsList.selectedItem
+        val service = GitlabService.getService(project)
+
+        val projects = try {
+            service.projects(selectedDomain as String)
+        } catch (e: Exception) {
+            logger.error("Error while fetching projects. Try to re-authenticate.", e)
+            GitlabService.getService(project).askUserForAccessToken(selectedDomain as String)
+            logger.info("Re-authentication successful. Try to fetch projects again.")
+            service.projects(selectedDomain)
+        }
+
+        logger.info("Fetched ${projects.size} projects for domain $selectedDomain")
+        logger.trace("Projects: $projects")
+
+        projectsList.removeAll()
+        projectsList.addItem("")
+        projects.forEach { projectsList.addItem(it.name) }
     }
 }

@@ -6,7 +6,10 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 
-@State(name = "dev.rubeen.plugins.intellij.gitlabtoolbox.AppSettingsState", storages = [Storage("gitlab-toolbox.xml")])
+@State(
+    name = "dev.rubeen.plugins.intellij.gitlabtoolbox.AppSettingsState",
+    storages = [Storage("gitlab-toolbox.xml")],
+)
 class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var gitlabDomains: List<String>? = null
 

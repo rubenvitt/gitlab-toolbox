@@ -26,6 +26,17 @@ class ProjectSettingsConfigurable(private val project: Project) : Configurable {
         settings.gitlabProjectId = settingsComponent!!.selectedGitlabProject
     }
 
+    override fun reset() {
+        val settings = ProjectSettingsState.getInstance(project) ?: ProjectSettingsState()
+
+        settingsComponent!!.selectedGitlabDomain = settings.gitlabDomain
+        settingsComponent!!.selectedGitlabProject = settings.gitlabProjectId
+    }
+
+    override fun disposeUIResources() {
+        settingsComponent = null
+    }
+
     override fun getDisplayName(): String {
         return "GitLab Toolbox (Project Settings)"
     }

@@ -1,6 +1,7 @@
 package dev.rubeen.plugins.intellij.gitlabtoolbox.services
 
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings.ProjectSettingsState
@@ -13,9 +14,11 @@ private const val SERVICE = "GitLab"
 @Service(Service.Level.PROJECT)
 class GitlabService(private val project: Project) {
     private lateinit var api: GitLabApi
+    private val logger = logger<GitlabService>()
     fun projects(api: String? = null): MutableList<GitlabProject> = getApi(api ?: currentApi!!).projectApi.projects
 
     fun askUserForAccessToken(api: String? = null) {
+        logger.info("Ask user for access token")
         Messages.showPasswordDialog(
             project,
             "Enter Access Token",
@@ -23,6 +26,7 @@ class GitlabService(private val project: Project) {
             Messages.getInformationIcon(),
             null
         ).let { token ->
+            logger.info("Save access token")
             CredentialService.instance.saveGitlabAccessToken(api ?: currentApi!!, token!!)
         }
     }
@@ -40,19 +44,25 @@ class GitlabService(private val project: Project) {
     }
 
     private fun initApi(domain: String): GitLabApi {
+        logger.info("Init api for domain $domain")
         val credentials = CredentialService.instance.readGitlabAccessToken(domain)
         if (credentials != null) {
             api = GitLabApi(domain, credentials)
         } else {
+            logger.error("No credentials found for domain $domain")
             throw GitlabException("No credentials found for domain $domain")
         }
 
+        logger.info("Api for domain $domain initialized")
         return api
     }
 
-    private fun apiAvailableForDomain(domain: String) = ::api.isInitialized && api.gitLabServerUrl == domain
+    private fun apiAvailableForDomain(domain: String): Boolean {
+        logger.info("Check if api is available for domain $domain")
+        return ::api.isInitialized && api.gitLabServerUrl == domain
+    }
 
-    val currentApi
+    private val currentApi
         get() = ProjectSettingsState.getInstance(project)?.gitlabDomain
 
 }

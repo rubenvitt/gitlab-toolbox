@@ -4,6 +4,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
+import com.intellij.util.xmlb.XmlSerializerUtil
 
 @State(
     name = "dev.rubeen.plugins.intellij.gitlabtoolbox.ProjectSettingsState",
@@ -20,7 +21,6 @@ class ProjectSettingsState : PersistentStateComponent<ProjectSettingsState> {
     override fun getState(): ProjectSettingsState = this
 
     override fun loadState(state: ProjectSettingsState) {
-        gitlabDomain = state.gitlabDomain
-        gitlabProjectId = state.gitlabProjectId
+        XmlSerializerUtil.copyBean(state, this)
     }
 }
