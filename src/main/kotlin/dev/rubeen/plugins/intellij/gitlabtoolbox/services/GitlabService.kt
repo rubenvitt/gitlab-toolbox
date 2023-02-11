@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.Messages
 import dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings.ProjectSettingsState
 import dev.rubeen.plugins.intellij.gitlabtoolbox.exceptions.GitlabException
 import org.gitlab4j.api.GitLabApi
+import org.gitlab4j.api.models.MergeRequest
 import org.gitlab4j.api.models.Project as GitlabProject
 
 private const val SERVICE = "GitLab"
@@ -15,7 +16,12 @@ private const val SERVICE = "GitLab"
 class GitlabService(private val project: Project) {
     private lateinit var api: GitLabApi
     private val logger = logger<GitlabService>()
-    fun projects(api: String? = null): MutableList<GitlabProject> = getApi(api ?: currentApi!!).projectApi.projects
+    fun projects(api: String? = null): List<GitlabProject> = getApi(api ?: currentApi!!).projectApi.projects
+    fun mergeRequests(gitlabProject: Int, api: String? = null): List<MergeRequest> =
+        getApi(api ?: currentApi!!).mergeRequestApi.getMergeRequests(gitlabProject)
+
+    val uri: String
+        get() = api.gitLabServerUrl
 
     fun askUserForAccessToken(api: String? = null) {
         logger.info("Ask user for access token")
@@ -62,7 +68,7 @@ class GitlabService(private val project: Project) {
         return ::api.isInitialized && api.gitLabServerUrl == domain
     }
 
-    private val currentApi
-        get() = ProjectSettingsState.getInstance(project)?.gitlabDomain
+    private val currentApi: String?
+        get() = ProjectSettingsState.getInstance(project).gitlabDomain
 
 }

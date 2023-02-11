@@ -12,10 +12,10 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 )
 class ProjectSettingsState : PersistentStateComponent<ProjectSettingsState> {
     var gitlabDomain: String? = null
-    var gitlabProjectId: String? = null
+    var gitlabProjectId: Int? = null
 
     companion object {
-        fun getInstance(project: Project): ProjectSettingsState? = project.getService(ProjectSettingsState::class.java)
+        fun getInstance(project: Project): ProjectSettingsState = project.getService(ProjectSettingsState::class.java)
     }
 
     override fun getState(): ProjectSettingsState = this

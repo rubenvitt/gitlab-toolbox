@@ -14,23 +14,23 @@ class ProjectSettingsConfigurable(private val project: Project) : Configurable {
     }
 
     override fun isModified(): Boolean {
-        val settings = ProjectSettingsState.getInstance(project) ?: ProjectSettingsState()
+        val settings = ProjectSettingsState.getInstance(project)
         return settings.gitlabDomain != settingsComponent!!.selectedGitlabDomain
-                || settings.gitlabProjectId != settingsComponent!!.selectedGitlabProject
+                || settings.gitlabProjectId != settingsComponent!!.selectedGitlabProject?.id
     }
 
     override fun apply() {
-        val settings = ProjectSettingsState.getInstance(project) ?: ProjectSettingsState()
+        val settings = ProjectSettingsState.getInstance(project)
 
         settings.gitlabDomain = settingsComponent!!.selectedGitlabDomain
-        settings.gitlabProjectId = settingsComponent!!.selectedGitlabProject
+        settings.gitlabProjectId = settingsComponent!!.selectedGitlabProject?.id
     }
 
     override fun reset() {
-        val settings = ProjectSettingsState.getInstance(project) ?: ProjectSettingsState()
+        val settings = ProjectSettingsState.getInstance(project)
 
         settingsComponent!!.selectedGitlabDomain = settings.gitlabDomain
-        settingsComponent!!.selectedGitlabProject = settings.gitlabProjectId
+        settingsComponent!!.selectedGitlabProject = settings.gitlabProjectId?.let { settingsComponent!!.getProject(it) }
     }
 
     override fun disposeUIResources() {

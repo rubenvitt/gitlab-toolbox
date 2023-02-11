@@ -41,7 +41,7 @@
                 displayName="Gitlab Toolbox Settings (Project)"/>
 
         <toolWindow factoryClass="dev.rubeen.plugins.intellij.gitlabtoolbox.toolwindows.main.MainToolWindowFactory"
-                    id="GitlabToolboxToolWindow" anchor="bottom" canCloseContents="true"/>
+                    id="dev.rubeen.plugins.intellij.gitlabtoolbox.toolwindows.main.MainToolWindow" anchor="bottom" canCloseContents="true"/>
 
         <applicationService
                 serviceImplementation="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsState"/>
@@ -68,4 +68,9 @@
 
     <applicationListeners>
     </applicationListeners>
+
+    <projectListeners>
+        <listener class="dev.rubeen.plugins.intellij.gitlabtoolbox.listener.ToolWindowListener"
+                  topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener" />
+    </projectListeners>
 </idea-plugin>
