@@ -45,6 +45,8 @@
 
         <applicationService
                 serviceImplementation="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsState"/>
+        <projectService
+                serviceImplementation="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings.ProjectSettingsState"/>
 
     </extensions>
     <actions>
