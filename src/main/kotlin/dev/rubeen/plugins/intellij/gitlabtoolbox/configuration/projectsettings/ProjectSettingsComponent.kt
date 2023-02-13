@@ -58,18 +58,18 @@ class ProjectSettingsComponent(project: Project) {
         val service = GitlabService.getService(project)
 
         val projects = try {
-            service.projects(selectedDomain)
+            service.projects(selectedDomain).current()
         } catch (e: Exception) {
             logger.error("Error while fetching projects. Try to re-authenticate.", e)
             GitlabService.getService(project).askUserForAccessToken(selectedDomain)
             logger.info("Re-authentication successful. Try to fetch projects again.")
-            service.projects(selectedDomain)
+            service.projects(selectedDomain).current()
         }
 
         logger.info("Fetched ${projects.size} projects for domain $selectedDomain")
         logger.trace("Projects: $projects")
 
-        projectsList.removeAll()
+        projectsList.removeAllItems()
         projectsList.addItem(null)
         projects.forEach { projectsList.addItem(it) }
     }

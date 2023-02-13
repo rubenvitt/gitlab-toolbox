@@ -9,7 +9,12 @@ class MainToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val mainToolWindow = MainToolWindow(toolWindow)
         val content = ContentFactory.getInstance()
-            .createContent(mainToolWindow.getContent, "", false)
+            .createContent(mainToolWindow.getContent, "Merge Request List", false).apply {
+                isCloseable = false
+                isPinned = true
+            }
+
         toolWindow.contentManager.addContent(content)
+        toolWindow.title = "Gitlab Toolbox"
     }
 }

@@ -11,7 +11,7 @@ class PopupDialogAction : AnAction() {
         val project = e.project
         project?.getService(GitlabService::class.java)?.let { service ->
             try {
-                service.projects().let { projects ->
+                service.projects().current().let { projects ->
                     Messages.showMessageDialog(project, projects.joinToString("\n") {
                         println(it)
                         it.name

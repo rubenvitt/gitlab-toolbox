@@ -2,9 +2,9 @@ package dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings
 
 import com.intellij.openapi.ui.Messages
 import com.intellij.ui.components.JBList
+import com.intellij.ui.components.JBPasswordField
 import com.intellij.util.ui.FormBuilder
 import dev.rubeen.plugins.intellij.gitlabtoolbox.services.CredentialService
-import java.awt.FlowLayout
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -15,6 +15,8 @@ class AppSettingsComponent {
     private val jbAddButton = JButton("Add domain")
     private val jRemoveButton = JButton("Remove domain")
     private val jbRemoveCredentialsButton = JButton("Remove credentials for domain")
+    private val jbAccessTokenInput = JBPasswordField()
+    private val jbSaveAccessTokenButton = JButton("Save access token")
 
     val panel: JPanel
         get() = mainPanel
@@ -48,19 +50,20 @@ class AppSettingsComponent {
             CredentialService.instance.removeGitlabAccessToken(jbList.selectedValue)
         }
 
-        val firstLine = JPanel().apply {
-            layout = FlowLayout(FlowLayout.LEADING)
-            add(
-                FormBuilder.createFormBuilder()
-                    .addLabeledComponent("Domains:", jbList)
-                    .panel
-            )
-            add(jbRemoveCredentialsButton)
-            add(jRemoveButton)
+        jbSaveAccessTokenButton.addActionListener {
+            CredentialService.instance.saveGitlabAccessToken(jbList.selectedValue, jbAccessTokenInput.password)
+        }
+
+        val firstLine = FormBuilder.createFormBuilder().apply {
+            addLabeledComponent("Domains:", jbList)
+            addLabeledComponent("Access Token", jbAccessTokenInput)
+            addComponent(jbSaveAccessTokenButton)
+            addComponent(jbRemoveCredentialsButton)
+            addComponent(jRemoveButton)
         }
 
         mainPanel = FormBuilder.createFormBuilder()
-            .addComponent(firstLine)
+            .addComponent(firstLine.panel)
             .addComponentFillVertically(JPanel(), 0)
             .addComponent(jbAddButton)
             .panel

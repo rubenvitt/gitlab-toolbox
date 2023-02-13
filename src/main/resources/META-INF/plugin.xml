@@ -24,6 +24,8 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>Git4Idea</depends>
 
+    <resource-bundle>messages.GitlabToolboxBundle</resource-bundle>
+
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
@@ -41,7 +43,7 @@
                 displayName="Gitlab Toolbox Settings (Project)"/>
 
         <toolWindow factoryClass="dev.rubeen.plugins.intellij.gitlabtoolbox.toolwindows.main.MainToolWindowFactory"
-                    id="dev.rubeen.plugins.intellij.gitlabtoolbox.toolwindows.main.MainToolWindow" anchor="bottom" canCloseContents="true"/>
+                    id="dev.rubeen.plugins.intellij.gitlabtoolbox.toolwindows.main.MainToolWindow" anchor="bottom" canCloseContents="true" />
 
         <applicationService
                 serviceImplementation="dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.appsettings.AppSettingsState"/>

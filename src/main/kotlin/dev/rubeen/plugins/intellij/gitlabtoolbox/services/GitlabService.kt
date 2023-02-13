@@ -7,7 +7,9 @@ import com.intellij.openapi.ui.Messages
 import dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings.ProjectSettingsState
 import dev.rubeen.plugins.intellij.gitlabtoolbox.exceptions.GitlabException
 import org.gitlab4j.api.GitLabApi
+import org.gitlab4j.api.Pager
 import org.gitlab4j.api.models.MergeRequest
+import org.gitlab4j.api.models.ProjectFilter
 import org.gitlab4j.api.models.Project as GitlabProject
 
 private const val SERVICE = "GitLab"
@@ -16,7 +18,10 @@ private const val SERVICE = "GitLab"
 class GitlabService(private val project: Project) {
     private lateinit var api: GitLabApi
     private val logger = logger<GitlabService>()
-    fun projects(api: String? = null): List<GitlabProject> = getApi(api ?: currentApi!!).projectApi.projects
+    fun projects(api: String? = null): Pager<GitlabProject> = getApi(api ?: currentApi!!).projectApi.getProjects(
+        ProjectFilter().withMembership(true), 10
+    )
+
     fun mergeRequests(gitlabProject: Int, api: String? = null): List<MergeRequest> =
         getApi(api ?: currentApi!!).mergeRequestApi.getMergeRequests(gitlabProject)
 
@@ -33,7 +38,7 @@ class GitlabService(private val project: Project) {
             null
         ).let { token ->
             logger.info("Save access token")
-            CredentialService.instance.saveGitlabAccessToken(api ?: currentApi!!, token!!)
+            CredentialService.instance.saveGitlabAccessToken(api ?: currentApi!!, token!!.toCharArray())
         }
     }
 

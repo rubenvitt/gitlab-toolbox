@@ -11,7 +11,7 @@ private const val GITLAB_SERVICE = "GitLab"
 
 @Service(Service.Level.APP)
 class CredentialService {
-    fun saveGitlabAccessToken(domain: String, accessToken: String) {
+    fun saveGitlabAccessToken(domain: String, accessToken: CharArray) {
         PasswordSafe.instance.set(
             createCredentialAttributes(domain),
             Credentials(domain, accessToken)
