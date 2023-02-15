@@ -9,14 +9,18 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.components.IconLabelButton
 import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBList
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ui.UIUtil
+import dev.rubeen.plugins.intellij.gitlabtoolbox.services.GitlabService
 import org.gitlab4j.api.models.MergeRequest
 import java.awt.CardLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.ListCellRenderer
+import kotlin.reflect.KFunction0
 
-class MrTabContent(private val mergeRequest: MergeRequest, toolWindow: ToolWindow) :
+class MrTabContent(private val mergeRequest: MergeRequest, private val toolWindow: ToolWindow) :
     PanelWithActionsAndCloseButton(toolWindow.contentManager, "mergeRequest") {
     var mainContent: JPanel? = null
     var mrTitle: JBLabel? = null
@@ -38,14 +42,31 @@ class MrTabContent(private val mergeRequest: MergeRequest, toolWindow: ToolWindo
         }
     }
 
+    fun reload() {
+        // recreate center panel
+        centerPanel.removeAll()
+        createCenterPanel()
+    }
+
     override fun dispose() {
         Disposer.dispose(this)
     }
 
     override fun createCenterPanel(): JComponent {
+        val commits = GitlabService.getService(toolWindow.project).mergeRequestCommits(mergeRequest)
         centerPanel.add(JPanel().apply {
-         add(JBLabel("target branch: " + mergeRequest.targetBranch), "test")
-         add(JBLabel("source branch: " + mergeRequest.sourceBranch), "test2")
+            add(JBLabel("target branch: " + mergeRequest.targetBranch), "test")
+            add(JBLabel("source branch: " + mergeRequest.sourceBranch), "test2")
+            add(JBList(commits.all()).apply {
+                cellRenderer = ListCellRenderer { list, value, index, isSelected, cellHasFocus ->
+                    JPanel().apply {
+                        add(JBLabel(value.id))
+                        add(JBLabel(value.message ?: "No message"))
+                        add(JBLabel(value.authorName))
+                        add(JBLabel(value.committerEmail))
+                    }
+                }
+            })
         })
         return centerPanel
     }
@@ -54,7 +75,14 @@ class MrTabContent(private val mergeRequest: MergeRequest, toolWindow: ToolWindo
         if (group == null) throw IllegalArgumentException("Group must not be null")
 
         group.addAction(MrOpenAction(mergeRequest))
+        group.addAction(MRReloadAction(this::reload))
         group.addSeparator()
+    }
+}
+
+class MRReloadAction(private val reload: KFunction0<Unit>) : AnAction("Reload", "Reload Merge Request details", PlatformIcons.PROJECT_ICON) {
+    override fun actionPerformed(e: AnActionEvent) {
+        reload()
     }
 }
 

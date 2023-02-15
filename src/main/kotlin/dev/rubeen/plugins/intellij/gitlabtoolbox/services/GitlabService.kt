@@ -6,8 +6,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import dev.rubeen.plugins.intellij.gitlabtoolbox.configuration.projectsettings.ProjectSettingsState
 import dev.rubeen.plugins.intellij.gitlabtoolbox.exceptions.GitlabException
-import org.gitlab4j.api.GitLabApi
-import org.gitlab4j.api.Pager
+import org.gitlab4j.api.*
+import org.gitlab4j.api.models.Commit
 import org.gitlab4j.api.models.MergeRequest
 import org.gitlab4j.api.models.ProjectFilter
 import org.gitlab4j.api.models.Project as GitlabProject
@@ -18,12 +18,21 @@ private const val SERVICE = "GitLab"
 class GitlabService(private val project: Project) {
     private lateinit var api: GitLabApi
     private val logger = logger<GitlabService>()
-    fun projects(api: String? = null): Pager<GitlabProject> = getApi(api ?: currentApi!!).projectApi.getProjects(
+    fun projects(api: String? = null): Pager<GitlabProject> = projectApi(api).getProjects(
         ProjectFilter().withMembership(true), 10
     )
 
-    fun mergeRequests(gitlabProject: Int, api: String? = null): List<MergeRequest> =
-        getApi(api ?: currentApi!!).mergeRequestApi.getMergeRequests(gitlabProject)
+    fun mergeRequests(gitlabProject: Int): List<MergeRequest> = mergeRequestApi()!!.getMergeRequests(gitlabProject)
+
+    fun mergeRequestCommits(mergeRequest: MergeRequest): Pager<Commit> =
+        mergeRequestApi()!!.getCommits(mergeRequest.projectId, mergeRequest.iid, 10)
+
+    private fun commitsApi(api: String? = null): CommitsApi = getApi(api ?: currentApi!!).commitsApi!!
+
+    private fun projectApi(api: String?): ProjectApi = getApi(api ?: currentApi!!).projectApi!!
+
+    private fun mergeRequestApi(api: String? = null): MergeRequestApi? =
+        getApi(api ?: currentApi!!).mergeRequestApi
 
     val uri: String
         get() = api.gitLabServerUrl
